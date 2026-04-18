@@ -1,0 +1,10 @@
+﻿bin/
+obj/
+.vs/
+*.user
+*.suo
+*.cache
+*.db
+*.sqlite
+*.sqlite3
+*.DS_Store
