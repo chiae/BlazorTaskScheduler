@@ -1,4 +1,5 @@
 using BlazorTaskScheduler.Components;
+using BlazorTaskScheduler.Quartz;
 using BlazorTaskScheduler.QuartzJobs;
 using Quartz;
 
@@ -21,7 +22,8 @@ builder.Services.AddQuartz(static q =>
 
 // Start Quartz as a background service
 builder.Services.AddQuartzHostedService();
-
+// Add QuartzService
+builder.Services.AddSingleton<IQuartzService, QuartzService>();
 
 var app = builder.Build();
 
