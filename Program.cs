@@ -12,7 +12,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddQuartz(static q =>
 {
     // Add a test job
-    q.AddJob<SampleJob>(opts => opts.WithIdentity("SampleJob"));
+    q.AddJob<SampleJob>(opts => opts.WithIdentity("SampleJob").WithDescription("Test job only."));
     // Trigger job every 10 seconds
     q.AddTrigger(opts => opts
         .ForJob("SampleJob")

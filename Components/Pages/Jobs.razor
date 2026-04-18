@@ -1,0 +1,81 @@
+﻿@using BlazorTaskScheduler.Quartz
+
+@page "/jobs"
+@inject IQuartzService QuartzService
+
+<h3>Scheduled Jobs</h3>
+
+@if (jobs == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Group</th>
+                <th>Description</th>
+                <th>Next Run</th>
+                <th>Last Run</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var job in jobs)
+            {
+                <tr>
+                    <td>@job.Name</td>
+                    <td>@job.Group</td>
+                    <td>@job.Description</td>
+                    <td>@Format(job.NextRun)</td>
+                    <td>@Format(job.LastRun)</td>
+                    <td>@(job.IsPaused ? "Paused" : "Active")</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" @onclick="() => RunNow(job)">Run</button>
+                        @if (job.IsPaused)
+                        {
+                            <button class="btn btn-sm btn-success" @onclick="() => Resume(job)">Resume</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-warning" @onclick="() => Pause(job)">Pause</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<JobInfoData> jobs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        jobs = await QuartzService.GetJobsAsync();
+    }
+
+    string Format(DateTimeOffset? dto)
+        => dto?.ToLocalTime().ToString("g") ?? "-";
+
+    async Task RunNow(JobInfoData job)
+    {
+        await QuartzService.RunJobNow(job.Name, job.Group);
+        jobs = await QuartzService.GetJobsAsync();
+    }
+
+    async Task Pause(JobInfoData job)
+    {
+        await QuartzService.PauseJob(job.Name, job.Group);
+        jobs = await QuartzService.GetJobsAsync();
+    }
+
+    async Task Resume(JobInfoData job)
+    {
+        await QuartzService.ResumeJob(job.Name, job.Group);
+        jobs = await QuartzService.GetJobsAsync();
+    }
+}
