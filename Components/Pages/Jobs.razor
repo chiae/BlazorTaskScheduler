@@ -1,54 +1,71 @@
-﻿@using BlazorTaskScheduler.Quartz
+﻿@using MudBlazor
+@using BlazorTaskScheduler.Quartz
 
 @page "/jobs"
 @inject IQuartzService QuartzService
 
-<h3>Scheduled Jobs</h3>
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h5">Scheduled Jobs</MudText>
 
-@if (jobs == null)
-{
-    <p>Loading...</p>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Group</th>
-                <th>Description</th>
-                <th>Next Run</th>
-                <th>Last Run</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var job in jobs)
-            {
-                <tr>
-                    <td>@job.Name</td>
-                    <td>@job.Group</td>
-                    <td>@job.Description</td>
-                    <td>@Format(job.NextRun)</td>
-                    <td>@Format(job.LastRun)</td>
-                    <td>@(job.IsPaused ? "Paused" : "Active")</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary" @onclick="() => RunNow(job)">Run</button>
+    @if (jobs == null)
+    {
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+    }
+    else
+    {
+        <MudTable T="JobInfoData" Items="@jobs" Hover="true" Dense="true" Bordered="true" Striped="true">
+
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Group</MudTh>
+                <MudTh>Description</MudTh>
+                <MudTh>Next Run</MudTh>
+                <MudTh>Last Run</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+
+            <!-- IMPORTANT: Context="job" MUST be here -->
+            <RowTemplate Context="job">
+                <MudTd>@job.Name</MudTd>
+                <MudTd>@job.Group</MudTd>
+                <MudTd>@job.Description</MudTd>
+                <MudTd>@Format(job.NextRun)</MudTd>
+                <MudTd>@Format(job.LastRun)</MudTd>
+
+                <MudTd>
+                    <MudChip T="string" Color="@(job.IsPaused ? Color.Warning : Color.Success)">
+                        @(job.IsPaused ? "Paused" : "Active")
+                    </MudChip>
+                </MudTd>
+
+                <MudTd>
+                    <MudStack Row="true" Spacing="1">
+                        <MudButton Size="Size.Small" Color="Color.Primary"
+                                   OnClick="@(() => RunNow(job))">
+                            Run
+                        </MudButton>
+
                         @if (job.IsPaused)
                         {
-                            <button class="btn btn-sm btn-success" @onclick="() => Resume(job)">Resume</button>
+                            <MudButton Size="Size.Small" Color="Color.Success" Variant="Variant.Outlined"
+                                       OnClick="@(() => Resume(job))">
+                                Resume
+                            </MudButton>
                         }
                         else
                         {
-                            <button class="btn btn-sm btn-warning" @onclick="() => Pause(job)">Pause</button>
+                            <MudButton Size="Size.Small" Color="Color.Warning" Variant="Variant.Outlined"
+                                       OnClick="@(() => Pause(job))">
+                                Pause
+                            </MudButton>
                         }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                    </MudStack>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+</MudPaper>
 
 @code {
     List<JobInfoData> jobs;

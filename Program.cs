@@ -1,6 +1,7 @@
 using BlazorTaskScheduler.Components;
 using BlazorTaskScheduler.Quartz;
 using BlazorTaskScheduler.QuartzJobs;
+using MudBlazor.Services;
 using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,8 +23,10 @@ builder.Services.AddQuartz(static q =>
 
 // Start Quartz as a background service
 builder.Services.AddQuartzHostedService();
-// Add QuartzService
+// Register Quartz
 builder.Services.AddSingleton<IQuartzService, QuartzService>();
+// Register MudBlazor
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 
