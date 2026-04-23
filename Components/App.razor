@@ -1,8 +1,6 @@
 ﻿@using MudBlazor
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,15 +12,15 @@
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
 </head>
-
 <body>
-    <Routes />
- <MudThemeProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+    @* Fix: Apply the rendermode directly to the Routes component *@
+    <Routes @rendermode="RenderMode.InteractiveServer" />
+
+    <MudThemeProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
 
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 </body>
-
 </html>

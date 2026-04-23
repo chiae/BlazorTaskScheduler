@@ -1,5 +1,7 @@
-﻿@using MudBlazor
+﻿@rendermode InteractiveServer
+@using MudBlazor
 @using BlazorTaskScheduler.Quartz
+@using Microsoft.AspNetCore.Components.Web
 
 @page "/jobs"
 @inject IQuartzService QuartzService
@@ -41,34 +43,25 @@
 
                 <MudTd>
                     <MudStack Row="true" Spacing="1">
-                        <MudButton Size="Size.Small" Color="Color.Primary"
-                                   OnClick="@(() => RunNow(job))">
-                            Run
-                        </MudButton>
-
+                        <MudButton Size="Size.Small" Color="Color.Primary" OnClick="@(() => RunNow(job))">Run</MudButton>
                         @if (job.IsPaused)
                         {
-                            <MudButton Size="Size.Small" Color="Color.Success" Variant="Variant.Outlined"
-                                       OnClick="@(() => Resume(job))">
-                                Resume
-                            </MudButton>
+                            <MudButton Size="Size.Small" Color="Color.Success" Variant="Variant.Outlined" OnClick="@(() => Resume(job))">Resume</MudButton>
                         }
                         else
                         {
-                            <MudButton Size="Size.Small" Color="Color.Warning" Variant="Variant.Outlined"
-                                       OnClick="@(() => Pause(job))">
-                                Pause
-                            </MudButton>
+                            <MudButton Size="Size.Small" Color="Color.Warning" Variant="Variant.Outlined" OnClick="@(() => Pause(job))">Pause</MudButton>
                         }
                     </MudStack>
                 </MudTd>
+
             </RowTemplate>
         </MudTable>
     }
 </MudPaper>
 
 @code {
-    List<JobInfoData> jobs;
+    List<JobInfoData> jobs; 
 
     protected override async Task OnInitializedAsync()
     {
