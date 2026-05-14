@@ -1,10 +1,9 @@
-﻿@rendermode InteractiveServer
+﻿
 @using MudBlazor
 @using BlazorTaskScheduler.Quartz
-@using Microsoft.AspNetCore.Components.Web
-
-@page "/jobs"
 @inject IQuartzService QuartzService
+@page "/jobs"
+
 
 <MudPaper Class="pa-4">
     <MudText Typo="Typo.h5">Scheduled Jobs</MudText>
@@ -15,7 +14,7 @@
     }
     else
     {
-        <MudTable T="JobInfoData" Items="@jobs" Hover="true" Dense="true" Bordered="true" Striped="true">
+        <MudTable T="JobDetailData" Items="@jobs" Hover="true" Dense="true" Bordered="true" Striped="true">
 
             <HeaderContent>
                 <MudTh>Name</MudTh>
@@ -25,6 +24,7 @@
                 <MudTh>Last Run</MudTh>
                 <MudTh>Status</MudTh>
                 <MudTh>Actions</MudTh>
+                <MudTh></MudTh>
             </HeaderContent>
 
             <!-- IMPORTANT: Context="job" MUST be here -->
@@ -36,15 +36,15 @@
                 <MudTd>@Format(job.LastRun)</MudTd>
 
                 <MudTd>
-                    <MudChip T="string" Color="@(job.IsPaused ? Color.Warning : Color.Success)">
-                        @(job.IsPaused ? "Paused" : "Active")
+                    <MudChip T="string" Color="@(job.Status == "Paused" ? Color.Warning : Color.Success)">
+                        @(job.Status)
                     </MudChip>
                 </MudTd>
 
                 <MudTd>
                     <MudStack Row="true" Spacing="1">
                         <MudButton Size="Size.Small" Color="Color.Primary" OnClick="@(() => RunNow(job))">Run</MudButton>
-                        @if (job.IsPaused)
+                        @if (job.Status == "Paused")
                         {
                             <MudButton Size="Size.Small" Color="Color.Success" Variant="Variant.Outlined" OnClick="@(() => Resume(job))">Resume</MudButton>
                         }
@@ -54,6 +54,9 @@
                         }
                     </MudStack>
                 </MudTd>
+                <MudTd>
+                    <MudIconButton Href="@($"/jobs/{job.Group}/{job.Name}")" Icon ="@Icons.Material.Filled.ChevronRight" Size="Size.Small" title="Open job" Color="Color.Primary" />
+                </MudTd>
 
             </RowTemplate>
         </MudTable>
@@ -61,7 +64,7 @@
 </MudPaper>
 
 @code {
-    List<JobInfoData> jobs; 
+    List<JobDetailData> jobs; 
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,19 +74,19 @@
     string Format(DateTimeOffset? dto)
         => dto?.ToLocalTime().ToString("g") ?? "-";
 
-    async Task RunNow(JobInfoData job)
+    async Task RunNow(JobDetailData job)
     {
         await QuartzService.RunJobNow(job.Name, job.Group);
         jobs = await QuartzService.GetJobsAsync();
     }
 
-    async Task Pause(JobInfoData job)
+    async Task Pause(JobDetailData job)
     {
         await QuartzService.PauseJob(job.Name, job.Group);
         jobs = await QuartzService.GetJobsAsync();
     }
 
-    async Task Resume(JobInfoData job)
+    async Task Resume(JobDetailData job)
     {
         await QuartzService.ResumeJob(job.Name, job.Group);
         jobs = await QuartzService.GetJobsAsync();
