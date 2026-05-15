@@ -1,0 +1,51 @@
+﻿@page "/jobs/{group}/{name}"
+@using MudBlazor
+@using BlazorTaskScheduler.Quartz
+@inject IQuartzService QuartzService
+
+<h3>Job Details: @Group / @Name</h3>
+
+@if (jobDetails == null)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-5">
+        <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Primary" Href="@($"/jobs")"></MudIconButton>
+            <MudText Typo="Typo.h5" Class="fw-bold"     Variant="Variant.Outlined">@jobDetails?.Name</MudText>
+           
+        </MudStack>
+     
+
+    </MudStack>
+
+
+
+
+    <p><b>Description:</b> @jobDetails.Description</p>
+    <p><b>Type:</b> @jobDetails.JobType</p>
+    <p><b>Durable:</b> @jobDetails.Durable</p>
+    <p><b>Requests Recovery:</b> @jobDetails.RequestsRecovery</p>
+
+    <h4>Job Data Map</h4>
+    @foreach (var kv in jobDetails.DataMap)
+    {
+        <p>@kv.Key: @kv.Value</p>
+    }
+}
+
+@code {
+    [Parameter] public string? Group { get; set; }
+    [Parameter] public string? Name { get; set; }
+
+    private  JobDetailData? jobDetails; // Example object to hold your data
+    //private String StatusColor = jobDetails.Status 
+    protected override async Task OnParametersSetAsync()
+    {
+        jobDetails = await QuartzService.GetJobDetail(Name, Group);
+
+        
+    }
+}
